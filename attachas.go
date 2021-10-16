@@ -2,11 +2,15 @@ package attachas
 
 import (
 	as "code.as/core/api"
+	"net/http"
+	"time"
 )
 
 const (
 	apiURL    = "https://attach.as/api"
 	devAPIURL = "https://dev.attach.as/api"
+
+	timeoutSec = 20
 )
 
 // Client is used to interact with the Attach.as API.
@@ -26,6 +30,7 @@ type Client struct {
 //     sc := attachas.NewClient(u.AccessToken)
 func NewClient(token string) *Client {
 	cfg := as.NewClientConfig(apiURL, "go-attachas v1")
+	cfg.Client = &http.Client{Timeout: timeoutSec * time.Second}
 	return NewClientWith(cfg, token)
 }
 
@@ -39,6 +44,7 @@ func NewDevClient(token string) *Client {
 // NewClientWith builds a new API client with the provided configuration.
 func NewClientWith(cfg *as.ClientConfig, token string) *Client {
 	cl := as.NewClient(cfg)
+	cl.Config.Client = &http.Client{Timeout: timeoutSec * time.Second}
 	cl.Token = token
 	return &Client{*cl}
 }
